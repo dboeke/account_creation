@@ -1,0 +1,49 @@
+AWS SSM Parameters:
+
+  Name: /biogen/account/create/turbot/accessKey
+  Desc: Turbot Api Access Key
+  Type: SecureString
+
+  Name: /biogen/account/create/turbot/secretKey
+  Desc: Turbot Api Secret Key
+  Type: SecureString
+
+  Name: /biogen/account/create/turbot/url
+  Desc: url of Turbot environment e.g. https://console.sandbox.turbot.biogen.com/
+  Type: String
+
+  Name: /biogen/account/create/turbot/account
+  Desc: Account ID of Turbot Master
+  Type: String
+
+  Name: /biogen/account/create/turbot/environment
+  Desc: Turbot Environment e.g. sandbox, nonprod, prod
+  Type: String
+
+  Name: /biogen/account/create/org/root
+  Desc: Biogen Root Org ID
+  Type: SecureString
+
+  Name: /biogen/account/create/name/template
+  Desc: Account name template, {acct} will be replaced by the runtime value id e.g. biib-sandbox-{acct}
+  Type: String
+
+  Name: /biogen/account/create/email/template
+  Desc: Account email template, {acct} will be replaced by the runtime value id e.g. biib-{acct}@biogen.com
+  Type: String
+
+  Name: /biogen/account/create/org/assume/role
+  Desc: ARN of the organization role to assume to create the account in the organization.
+  Type: SecureString
+
+  Name: /biogen/account/create/org/assume/role/external/id
+  Desc: External ID for the organization role to assume to create the account in the organization.
+  Type: SecureString
+
+  Name: /biogen/account/create/turbot/role
+  Desc: Name of the role to create in the target account for Turbot to use e.g. 'turbot-v5-management-role'
+  Type: SecureString
+
+  Name: /biogen/account/create/turbot/role/external/id
+  Desc: External ID to use when creating Turbot Role in the target account e.g. 'turbotv5:adf708-dbfa5569d2b7
+  Type: SecureString

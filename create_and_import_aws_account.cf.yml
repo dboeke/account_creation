@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  ParentFolderID:
+    Description: ID of parent folder for new account
+    Type: String
+  OrgOU:
+    Description: Target AWS Organization OU Id
+    Type: String
+    MinLength: 3
+    Default: ou-wxnb-feyv7riq
+  AccountId:
+    Description: Turbot Account ID
+    Type: String
+    MinLength: 3
+    MaxLength: 6
+    AllowedPattern: '^(gxp)?[a-z][a-z][a-z]$'
+  LambdaSourceBucket:
+    Description: Local bucket name with Lambda source files
+    Type: String
+    Default: dmi-account-create
+
+
+Metadata: 
+
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Account Configuration
+        Parameters:
+          - AccountId
+          - ParentFolderID
+          - OrgOU
+
+      - Label:
+          default: Environment Config
+        Parameters:
+          - LambdaSourceBucket
+          
+Resources:
+  AccountCreateLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "account_create.main"
+      Runtime: "python3.8"
+      Role: !GetAtt LambdaExecuteRole.Arn
+      Timeout: 600
+      TracingConfig:
+          Mode: "Active"
+      Code:
+        S3Bucket: !Ref LambdaSourceBucket
+        S3Key: "account_create.zip"
+      Environment:
+        Variables:
+          'parentId' : !Ref ParentFolderID
+          'accountId': !Ref AccountId
+          'orgOuId' : !Ref OrgOU
+  
+  LambdaExecuteRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+      - PolicyName: LambdaAccessRole
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            Effect: Allow
+            Action: "*"
+            Resource: "*"
+
+  TriggerLambda:
+    Type: "Custom::TriggerLambda"
+    DeletionPolicy: Retain
+    DependsOn:
+    - AccountCreateLambda
+    - LambdaExecuteRole
+    Properties:
+      ServiceToken: !GetAtt AccountCreateLambda.Arn
