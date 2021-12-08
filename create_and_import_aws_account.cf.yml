@@ -55,6 +55,18 @@ Resources:
           'accountId': !Ref AccountId
           'orgOuId' : !Ref OrgOU
   
+  CreateLambdaVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !Ref AccountCreateLambda
+
+  CreateLambdaAsyncConfig:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName: !Ref AccountCreateLambda
+      MaximumRetryAttempts: 0
+      Qualifier: !GetAtt CreateLambdaVersion.Version
+
   LambdaExecuteRole:
     Type: "AWS::IAM::Role"
     Properties:
