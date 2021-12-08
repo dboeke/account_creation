@@ -254,9 +254,9 @@ def main(event,context):
     )
     turbotUrl = response['Parameter']['Value']
     if turbotUrl[-1] == '/':
-      endpoint = "{}api/v5/graphql"
+      endpoint = "{}api/v5/graphql".format(turbotUrl)
     else:
-      endpoint = "{}/api/v5/graphql"
+      endpoint = "{}/api/v5/graphql".format(turbotUrl)
 
     response = ssmClient.get_parameter(
       Name='/biogen/account/create/turbot/account',
