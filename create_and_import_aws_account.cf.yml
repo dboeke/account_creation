@@ -63,11 +63,11 @@ Resources:
           'parentId' : !Ref ParentFolderID
           'accountId': !Ref AccountId
           'orgOuId' : !Ref OrgOU
-    VpcConfig:
-      SecurityGroupIds:
-        - !Ref LambdaSecurityGroup
-      SubnetIds:
-        - !Ref LambdaSubnet
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+        SubnetIds:
+          - !Ref LambdaSubnet
   
   CreateLambdaVersion:
     Type: AWS::Lambda::Version
