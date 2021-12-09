@@ -7,7 +7,7 @@ Parameters:
     Description: Target AWS Organization OU Id
     Type: String
     MinLength: 3
-    Default: ou-wxnb-feyv7riq
+    Default: ou-****-********
   AccountId:
     Description: Turbot Account ID
     Type: String
@@ -17,8 +17,15 @@ Parameters:
   LambdaSourceBucket:
     Description: Local bucket name with Lambda source files
     Type: String
-    Default: dmi-account-create
-
+    Default: biogen-account-create-lambda
+  LambdaSecurityGroup:
+    Description: Security Group to attach to Lambda Function needs outbound 443 to 0.0.0.0/0 to hit AWS API
+    Type: String
+    Default: sg-****************
+  LambdaSubnet:
+    Description: Subnet to deploy lambda, must have network connectivity to internet and Turbot Master.
+    Type: String
+    Default: subnet-***************
 
 Metadata: 
 
@@ -35,6 +42,8 @@ Metadata:
           default: Environment Config
         Parameters:
           - LambdaSourceBucket
+          - LambdaSecurityGroup
+          - LambdaSubnet
           
 Resources:
   AccountCreateLambda:
@@ -54,6 +63,11 @@ Resources:
           'parentId' : !Ref ParentFolderID
           'accountId': !Ref AccountId
           'orgOuId' : !Ref OrgOU
+    VpcConfig:
+      SecurityGroupIds:
+        - !Ref LambdaSecurityGroup
+      SubnetIds:
+        - !Ref LambdaSubnet
   
   CreateLambdaVersion:
     Type: AWS::Lambda::Version
