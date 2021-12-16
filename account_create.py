@@ -71,12 +71,15 @@ def get_create_account_mutation():
         }
 '''
 
-def get_create_account_variables(parent_folder_id, aws_account_id):
+def get_create_account_variables(parent_folder_id, aws_account_id, turbot_account_id):
     if not parent_folder_id or type(parent_folder_id) is not str:
         raise ValueError("parent_folder_id is missing or not string type")
 
     if not aws_account_id or type(aws_account_id) is not str:
-        raise ValueError("parent_folder_id is missing or not string type")
+        raise ValueError("aws_account_id is missing or not string type")
+
+    if not turbot_account_id or type(turbot_account_id) is not str:
+        raise ValueError("turbot_account_id is missing or not string type")
 
     return {
         "input": {
@@ -86,6 +89,14 @@ def get_create_account_variables(parent_folder_id, aws_account_id):
             "data": {
                 # The AWS account ID that needs to be imported.
                 "Id": aws_account_id
+            },
+            "akas": [
+              f"arn:aws:::{aws_account_id}",
+              turbot_account_id
+            ],
+            "tags": {
+              "turbot_title": f"New Account - {turbot_account_id}",
+              "turbot_account": turbot_account_id
             },
             "metadata": {
                 "aws": {
@@ -144,7 +155,7 @@ def get_account_configuration_variables(aws_resource_id, role_arn, external_id):
     }
 
 
-def import_account(aws_account_id, role_arn, external_id, parentFolder, endpoint, turbotAccessKey, turbotSecretKey):
+def import_account(aws_account_id, turbot_account_id, role_arn, external_id, parentFolder, endpoint, turbotAccessKey, turbotSecretKey):
     graphql_endpoint = endpoint
     turbot_access_key = turbotAccessKey
     turbot_secret_access_key = turbotSecretKey
@@ -152,7 +163,7 @@ def import_account(aws_account_id, role_arn, external_id, parentFolder, endpoint
     graph_ql = GraphQl(graphql_endpoint, turbot_access_key, turbot_secret_access_key)
 
     create_account_mutation = get_create_account_mutation()
-    create_account_variables = get_create_account_variables(parentFolder, aws_account_id)
+    create_account_variables = get_create_account_variables(parentFolder, aws_account_id, turbot_account_id)
 
     response = graph_ql.run_query(create_account_mutation, create_account_variables)
 
@@ -490,7 +501,7 @@ def main(event,context):
     print("Account created, attempting import")
     print(response)
 
-    import_account(awsAccountId, accountRoleArn, turbotExternalId, parentId, endpoint, turbotAccessKey, turbotSecretKey)
+    import_account(awsAccountId, turbotAccountId, accountRoleArn, turbotExternalId, parentId, endpoint, turbotAccessKey, turbotSecretKey)
     
     respond_cloudformation(
       event, 
